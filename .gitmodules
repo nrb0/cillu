@@ -1,0 +1,6 @@
+[submodule "modules/cabl"]
+	path = modules/cabl
+	url = https://github.com/shaduzlabs/cabl.git
+[submodule "modules/oscpack"]
+	path = modules/oscpack
+	url = https://github.com/Neirbo888/oscpack.git
