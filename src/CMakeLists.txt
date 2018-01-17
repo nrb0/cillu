@@ -4,7 +4,12 @@ find_package(Boost REQUIRED)
 SET(
   cillu_FILES
     main.cpp
+    OSCReceiver.cpp
+    OSCReceiver.h
 )
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(
   ${PROJECT_NAME}
