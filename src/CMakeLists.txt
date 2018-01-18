@@ -8,6 +8,8 @@ SET(
     KontrolS49.h
     OSCReceiver.cpp
     OSCReceiver.h
+    MidiMessage.cpp
+    MidiMessage.h
     EnvelopeGenerator.cpp
     EnvelopeGenerator.h
     Illuminator.cpp

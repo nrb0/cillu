@@ -8,6 +8,9 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
+
+class RtMidiIn;
 
 namespace cillu
 {
@@ -46,6 +49,9 @@ public:
 
 private:
     void onOscMessage(const osc::ReceivedMessage& msg);
+    static void onMidiMessage(double timeStamp, std::vector<unsigned char>* message, void* userData);
+
+    void onReceiveNoteMessage(const osc::ReceivedMessage& msg);
 
     void onReceiveNoteHueMessage(const osc::ReceivedMessage& msg);
     void onReceiveNoteSatMessage(const osc::ReceivedMessage& msg);
@@ -56,6 +62,7 @@ private:
     void onReceiveEGReleaseMessage(const osc::ReceivedMessage& msg);
 
     std::unique_ptr<OSCReceiver> m_oscReceiver;
+    std::unique_ptr<RtMidiIn> m_midiIn;
 
     KeyColorModules m_keys;
 

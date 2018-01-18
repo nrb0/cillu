@@ -37,6 +37,9 @@ private:
     float m_hue = 0;
     float m_saturation = 0;
     float m_brightness = 0;
+    float m_brightnessCoef = 1;
+
+    int m_noteOn = 0;
 
     std::unique_ptr<EnvelopeGenerator> m_eg;
 

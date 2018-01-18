@@ -2,6 +2,8 @@
 
 #include "EnvelopeGenerator.h"
 
+#include <algorithm>
+
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace cillu
@@ -23,14 +25,17 @@ KeyColorModule::~KeyColorModule() = default;
 
 void KeyColorModule::noteOn()
 {
-    m_eg->gate(true);
+    m_noteOn = std::min(m_noteOn +1, 2);
+
+    m_eg->gate(m_noteOn != 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void KeyColorModule::noteOff()
 {
-    m_eg->gate(false);
+    m_noteOn = std::max(m_noteOn - 1, 0);
+    m_eg->gate(m_noteOn != 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -51,15 +56,14 @@ void KeyColorModule::setSaturation(const float saturation)
 
 void KeyColorModule::setBrightness(const float brightness)
 {
-    m_eg->setSustainLevel(brightness);
-    m_eg->gate(brightness != 0.);
+    m_brightnessCoef = brightness;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void KeyColorModule::onTimer()
 {
-    m_brightness = m_eg->processValue();
+    m_brightness = m_eg->processValue() * m_brightnessCoef;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

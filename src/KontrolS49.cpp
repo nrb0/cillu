@@ -30,6 +30,25 @@ KontrolS49::~KontrolS49() = default;
 void KontrolS49::onTimer()
 {
     m_illuminator->update();
+
+    if (!device())
+    {
+        return;
+    }
+
+    const size_t currentOctave = device()->currentOctave();
+    for (const size_t index : boost::irange(0, 49))
+    {
+        Illuminator::RGB color = m_illuminator->getKeyColor(currentOctave + index);
+        const uint8_t red = static_cast<uint8_t>(color.r * 127.);
+        const uint8_t green = static_cast<uint8_t>(color.g * 127.);
+        const uint8_t blue = static_cast<uint8_t>(color.b * 127.);
+        if (red != 0 || green != 0 || blue != 0)
+        {
+            printf("");
+        }
+        device()->setKeyLed(index, { red, green, blue });
+    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -79,7 +98,8 @@ void KontrolS49::encoderChanged(unsigned encoder_, bool valueIncreased_, bool sh
 
 void KontrolS49::keyChanged(unsigned index_, double value_, bool shiftPressed_)
 {
-    device()->setKeyLed(index_, {static_cast<uint8_t>(value_ * 0xff)});
+    std::string log = "Key#" + std::to_string(static_cast<int>(index_)) + " " + std::to_string(static_cast<int>(value_ * 100));
+    //M_LOG(log);
 }
 
 //--------------------------------------------------------------------------------------------------
