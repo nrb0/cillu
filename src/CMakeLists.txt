@@ -4,11 +4,21 @@ find_package(Boost REQUIRED)
 SET(
   cillu_FILES
     main.cpp
+    KontrolS49.cpp
+    KontrolS49.h
     OSCReceiver.cpp
     OSCReceiver.h
+    EnvelopeGenerator.cpp
+    EnvelopeGenerator.h
+    Illuminator.cpp
+    Illuminator.h
+    KeyColorModule.cpp
+    KeyColorModule.h
+    IlluminatorHelpers.cpp
+    IlluminatorHelpers.h
 )
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(

@@ -15,6 +15,7 @@ OSCReceiver::OSCReceiver(int port, std::function<void(const osc::ReceivedMessage
 
 OSCReceiver::~OSCReceiver()
 {
+    stop();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

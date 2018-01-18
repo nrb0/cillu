@@ -1,4 +1,8 @@
+#include "KontrolS49.h"
+#include "Illuminator.h"
 #include "OSCReceiver.h"
+
+#include "cabl/util/Color.h"
 
 #include <iostream>
 #include <chrono>
@@ -23,22 +27,15 @@ int main(int argc, const char* argv[])
 
     signal(SIGINT, intHandler);
 
-    auto callback = [](const osc::ReceivedMessage&)
-    {
-        std::cout << "Hello" << std::endl;
-    };
-
-    cillu::OSCReceiver receiver (15243, callback);
-
-    receiver.start();
+    cillu::KontrolS49 s49;
 
     while(running)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        s49.onTimer();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
     std::cout << "Stopping" << std::endl;
-    receiver.stop();
 
     return 0;
 }
