@@ -3,6 +3,8 @@
 #include "MidiMessage.h"
 #include "OSCReceiver.h"
 
+#include <cabl/util/Log.h>
+
 #include <boost/range/irange.hpp>
 
 #include <RtMidi.h>
@@ -10,10 +12,10 @@
 #include <algorithm>
 #include <iostream>
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace cillu
 {
-
-constexpr char midiPortName[] = "IAC Driver Bus 1";
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,30 +33,15 @@ Illuminator::Illuminator()
         {"/eg/release", std::bind(&Illuminator::onReceiveEGReleaseMessage, this, std::placeholders::_1)},
     });
 
-    const int numPorts = m_midiIn->getPortCount();
-    for (const size_t portIndex : boost::irange<size_t>(0, numPorts))
+    try
     {
-      try
-      {
-        const std::string portName = m_midiIn->getPortName(portIndex);
-        if (portName.find(midiPortName) != std::string::npos)
-        {
-          m_midiIn->openPort(portIndex);
-        }
-      }
-      catch (RtMidiError& error)
-      {
-        std::string strError(error.getMessage());
-        std::cout << "[Illuminator] RtMidiError: " << strError;
-      }
+        m_midiIn->openVirtualPort("cillu");
+        m_midiIn->setCallback(&Illuminator::onMidiMessage, this);
     }
-    if (!m_midiIn->isPortOpen())
+    catch (RtMidiError& error)
     {
-      m_midiIn.reset(nullptr);
-    }
-    else
-    {
-      m_midiIn->setCallback(&Illuminator::onMidiMessage, this);
+        std::string strError = "[Illuminator] RtMidiError: " + error.getMessage();
+        M_LOG(strError);
     }
 
     m_oscReceiver->start();
