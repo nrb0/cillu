@@ -123,51 +123,6 @@ void KontrolS49::sendMIDIMessage(MidiMessage& message)
 
 void KontrolS49::render()
 {
-    if (auto* firstDisplay = device()->textDisplay(0))
-    {
-        firstDisplay->putText("CHAIN:", 1);
-        auto chainPair = m_mappingValue.find(CHAIN_SELECTOR);
-        const unsigned value = chainPair != m_mappingValue.end() ? m_mappingValue[CHAIN_SELECTOR] : 0;
-        firstDisplay->putText(std::to_string(value), 2);
-    }
-    for (const size_t index : boost::irange(1, 9))
-    {
-        if (sl::cabl::TextDisplay* display = device()->textDisplay(index))
-        {
-            auto mappingPair = m_mappingValue.find(SCREEN_ENCODERS + index - 1);
-            const unsigned value = mappingPair != m_mappingValue.end() ? mappingPair->second : 0;
-            display->putValue(value / 127., 0);
-            display->putText("########", 1);
-            display->putText("########", 2);
-        }
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void KontrolS49::buttonChanged(sl::cabl::Device::Button button_, bool buttonState_, bool)
-{
-    switch(button_)
-    {
-    case sl::cabl::Device::Button::PresetUp:
-    case sl::cabl::Device::Button::PresetDown:
-        if (buttonState_)
-            incDecParameter(CHAIN_SELECTOR, button_ == sl::cabl::Device::Button::PresetUp);
-    default:
-        break;
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void KontrolS49::encoderChanged(unsigned encoder_, bool valueIncreased_, bool shiftPressed_)
-{
-    std::string log = "Enc#" + std::to_string(static_cast<int>(encoder_)) + ( valueIncreased_ ? " increased" : " decreased" );
-    M_LOG(log);
-    if (encoder_ > 0 && encoder_ <= 8)
-    {
-        incDecParameter(SCREEN_ENCODERS + encoder_ - 1, valueIncreased_);
-    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -175,34 +130,7 @@ void KontrolS49::encoderChanged(unsigned encoder_, bool valueIncreased_, bool sh
 void KontrolS49::keyChanged(unsigned index_, double value_, bool shiftPressed_)
 {
     std::string log = "Key#" + std::to_string(static_cast<int>(index_)) + " " + std::to_string(static_cast<int>(value_ * 100));
-    //M_LOG(log);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void KontrolS49::controlChanged(unsigned pot_, double value_, bool shiftPressed_)
-{
-    std::string log = "Pot#" + std::to_string(static_cast<int>(pot_)) + " " + std::to_string(static_cast<int>(value_ * 100));
     M_LOG(log);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void KontrolS49::incDecParameter(const unsigned id, const bool increment)
-{
-    auto mappingPair = m_mappingValue.find(id);
-    int value = 0;
-    if (mappingPair != m_mappingValue.end())
-    {
-        value = std::clamp<int>(increment ? mappingPair->second + 1 : mappingPair->second - 1, MIDI_MIN, MIDI_MAX);
-    }
-
-    if (mappingPair == m_mappingValue.end() || mappingPair->second != value)
-    {
-        m_mappingValue[id] = static_cast<unsigned>(value);
-        sendControlChange(0, id, static_cast<unsigned>(value));
-        requestDeviceUpdate();
-    }
 }
 
 //--------------------------------------------------------------------------------------------------
