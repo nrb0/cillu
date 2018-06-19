@@ -1,6 +1,7 @@
 #include "KontrolS49.h"
 #include "Illuminator.h"
-#include "OSCReceiver.h"
+
+#include <net/OSCReceiver.h>
 
 #include "cabl/util/Color.h"
 

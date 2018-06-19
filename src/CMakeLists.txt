@@ -6,8 +6,8 @@ SET(
     main.cpp
     KontrolS49.cpp
     KontrolS49.h
-    OSCReceiver.cpp
-    OSCReceiver.h
+    net/OSCReceiver.cpp
+    net/OSCReceiver.h
     MidiMessage.cpp
     MidiMessage.h
     EnvelopeGenerator.cpp
@@ -22,6 +22,8 @@ SET(
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/src)
 
 add_executable(
   ${PROJECT_NAME}
