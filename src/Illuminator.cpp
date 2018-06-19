@@ -39,13 +39,13 @@ Illuminator::~Illuminator() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Illuminator::RGB Illuminator::getKeyColor(size_t index)
+Illuminator::RGB Illuminator::getKeyColor(const size_t index, const bool isForeground)
 {
     RGB color;
 
     if (index < 128)
     {
-        const KeyColorModule& key = m_keys[index];
+        const KeyColorModule& key = isForeground ? m_foreground[index] : m_background[index];
         IlluminatorHelpers::HSVtoRGB(key.getHue(), key.getSaturation(), key.getBrightness(), color.r, color.g, color.b);
     }
 
@@ -56,7 +56,12 @@ Illuminator::RGB Illuminator::getKeyColor(size_t index)
 
 void Illuminator::update()
 {
-    std::for_each(m_keys.begin(), m_keys.end(), [](KeyColorModule& key)
+    std::for_each(m_background.begin(), m_background.end(), [](KeyColorModule& key)
+    {
+        key.onTimer();
+    });
+
+    std::for_each(m_foreground.begin(), m_foreground.end(), [](KeyColorModule& key)
     {
         key.onTimer();
     });
@@ -76,36 +81,40 @@ void Illuminator::onMidiMessage(double, std::vector<unsigned char>* message, voi
     if (midiMessage.isNote())
     {
         const int index = midiMessage.getKeyNumber();
+        const int channel = midiMessage.getChannel();
+
         if (index < 0 && index >= 128)
         {
             return;
         }
 
-        KeyColorModule& key = self->m_keys[index];
+        KeyColorModule& key = channel >= 0 && channel < 5 ? self->m_background[index] : self->m_foreground[index];
         if (midiMessage.isNoteOn() && index >= 0 && index < 128)
         {
             const float value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
-            switch(midiMessage.getChannel())
+            if (channel == 0 || channel == 5)
             {
-            case 0:
                 key.setBrightness(value);
                 key.noteOn();
-                break;
-            case 1:
+            }
+            else if (channel == 1 || channel == 6)
+            {
                 key.setHue(value * 360.);
-                break;
-            case 2:
+            }
+            else if (channel == 2 || channel == 7)
+            {
                 key.setSaturation(value);
-                break;
-            case 3:
+            }
+            else if (channel == 3 || channel == 8)
+            {
                 key.setAttack(value * 50.);
-                break;
-            case 4:
+            }
+            else if (channel == 4 || channel == 9)
+            {
                 key.setRelease(value * 127.);
-                break;
             }
         }
-        else if (midiMessage.isNoteOff() && midiMessage.getChannel() == 0)
+        else if (midiMessage.isNoteOff() && (channel == 0 || channel == 5))
         {
             key.noteOff();
         }

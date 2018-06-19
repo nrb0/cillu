@@ -14,7 +14,6 @@ namespace cillu
 KeyColorModule::KeyColorModule()
 : m_eg(std::make_unique<EnvelopeGenerator>())
 {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

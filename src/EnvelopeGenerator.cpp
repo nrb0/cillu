@@ -48,11 +48,11 @@ float EnvelopeGenerator::processValue()
         break;
 
     case State::Attack:
-        m_output = m_attackBase + m_output * m_attackCoef;
+        setOutput(m_attackBase + m_output * m_attackCoef);
 
         if (m_output >= 1.0)
         {
-            m_output = 1.0;
+            setOutput(1.0);
             m_state = State::Decay;
         }
 
@@ -64,11 +64,11 @@ float EnvelopeGenerator::processValue()
         break;
 
     case State::Decay:
-        m_output = m_decayBase + m_output * m_decayCoef;
+        setOutput(m_decayBase + m_output * m_decayCoef);
 
         if (m_output <= m_sustainLevel)
         {
-            m_output = m_sustainLevel;
+            setOutput(m_sustainLevel);
             m_state = State::Sustain;
         }
 
@@ -88,11 +88,11 @@ float EnvelopeGenerator::processValue()
         break;
 
     case State::Release:
-        m_output = m_releaseBase + m_output * m_releaseCoef;
+        setOutput(m_releaseBase + m_output * m_releaseCoef);
 
         if (m_output <= 0.0)
         {
-            m_output = 0.0;
+            setOutput(0.0);
             m_state = State::Idle;
         }
 
@@ -173,6 +173,13 @@ void EnvelopeGenerator::setDecayReleaseTargetRatio(const float targetRatio)
 void EnvelopeGenerator::gate(const bool enabled)
 {
     m_gate = enabled;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void EnvelopeGenerator::setOutput(const float value)
+{
+    m_output =  value <= 0.01 ? 0.0 : value > 0.99 ? 1.0 : value;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

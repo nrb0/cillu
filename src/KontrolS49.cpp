@@ -60,10 +60,23 @@ void KontrolS49::onTimer()
     const size_t currentOctave = device()->currentOctave();
     for (const size_t index : boost::irange(0, 49))
     {
-        Illuminator::RGB color = m_illuminator->getKeyColor(currentOctave + index);
-        const uint8_t red = static_cast<uint8_t>(color.r * 127.);
-        const uint8_t green = static_cast<uint8_t>(color.g * 127.);
-        const uint8_t blue = static_cast<uint8_t>(color.b * 127.);
+        Illuminator::RGB color = m_illuminator->getKeyColor(currentOctave + index, true);
+        uint8_t red = static_cast<uint8_t>(color.r * 127.);
+        uint8_t green = static_cast<uint8_t>(color.g * 127.);
+        uint8_t blue = static_cast<uint8_t>(color.b * 127.);
+        if (red == 0 && green == 0 && blue == 0)
+        {
+            color = m_illuminator->getKeyColor(currentOctave + index, false);
+            red = static_cast<uint8_t>(color.r * 127.);
+            green = static_cast<uint8_t>(color.g * 127.);
+            blue = static_cast<uint8_t>(color.b * 127.);
+        }
+
+        if (index == 29)
+        {
+            printf("");
+        }
+
         device()->setKeyLed(index, { red, green, blue });
     }
 }

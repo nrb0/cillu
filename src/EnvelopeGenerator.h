@@ -25,6 +25,8 @@ public:
     void setAttackTargetRatio(float ratio);
     void setDecayReleaseTargetRatio(float ratio);
 
+    bool isIdle() const { return m_state == State::Idle; }
+
 private:
 
     enum class State
@@ -37,6 +39,8 @@ private:
     };
 
     void updateParameters();
+
+    void setOutput(float value);
 
     float m_output = 0.0;
 

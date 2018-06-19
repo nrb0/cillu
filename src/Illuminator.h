@@ -39,7 +39,7 @@ public:
     Illuminator();
     ~Illuminator();
 
-    Illuminator::RGB getKeyColor(size_t index);
+    Illuminator::RGB getKeyColor(size_t index, bool isForeground);
 
     void update();
 
@@ -48,7 +48,8 @@ private:
 
     std::unique_ptr<RtMidiIn> m_midiIn;
 
-    KeyColorModules m_keys;
+    KeyColorModules m_background;
+    KeyColorModules m_foreground;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
