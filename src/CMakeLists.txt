@@ -1,4 +1,3 @@
-
 find_package(Boost REQUIRED)
 
 SET(
@@ -18,6 +17,8 @@ SET(
     KeyColorModule.h
     IlluminatorHelpers.cpp
     IlluminatorHelpers.h
+    utils/Color.cpp
+    utils/Color.h
 )
 
 set(CMAKE_CXX_STANDARD 17)
