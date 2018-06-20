@@ -74,11 +74,6 @@ void KeyboardLayer::onMidiMessage(double, std::vector<unsigned char>* message, v
         const int index = midiMessage.getKeyNumber();
         const int channel = midiMessage.getChannel();
 
-        if (index < 0 && index >= 128)
-        {
-            return;
-        }
-
         KeyColorModule& key = self->m_modules[index];
         if (midiMessage.isNoteOn() && index >= 0 && index < 128)
         {

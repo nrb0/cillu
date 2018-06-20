@@ -46,8 +46,7 @@ void KontrolS49::onTimer()
     for (const size_t index : boost::irange(0, 49))
     {
         Color foreground = m_foreground.getColor(currentOctave + index);
-//        Color background = m_background.getColor(currentOctave + index);
-        Color background = Color(1.0, 0, 0);
+        Color background = m_background.getColor(currentOctave + index);
         Color blend = ColorHelpers::blend(ColorHelpers::blend(foreground, background), Color());
 
 
