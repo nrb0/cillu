@@ -35,21 +35,15 @@ Illuminator::Illuminator()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Illuminator::~Illuminator() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-Illuminator::RGB Illuminator::getKeyColor(const size_t index, const bool isForeground)
+Color Illuminator::getKeyColor(const size_t index, const bool isForeground)
 {
-    RGB color;
-
     if (index < 128)
     {
-        const KeyColorModule& key = isForeground ? m_foreground[index] : m_background[index];
-        IlluminatorHelpers::HSVtoRGB(key.getHue(), key.getSaturation(), key.getBrightness(), color.r, color.g, color.b);
+        KeyColorModule& key = isForeground ? m_foreground[index] : m_background[index];
+        return key.getColor();
     }
 
-    return color;
+    return Color();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -58,12 +52,12 @@ void Illuminator::update()
 {
     std::for_each(m_background.begin(), m_background.end(), [](KeyColorModule& key)
     {
-        key.onTimer();
+        key.update();
     });
 
     std::for_each(m_foreground.begin(), m_foreground.end(), [](KeyColorModule& key)
     {
-        key.onTimer();
+        key.update();
     });
 }
 
@@ -88,35 +82,38 @@ void Illuminator::onMidiMessage(double, std::vector<unsigned char>* message, voi
             return;
         }
 
-        KeyColorModule& key = channel >= 0 && channel < 5 ? self->m_background[index] : self->m_foreground[index];
+        KeyColorModule& key = channel < 6 ? self->m_foreground[index] : self->m_background[index];
         if (midiMessage.isNoteOn() && index >= 0 && index < 128)
         {
-            const float value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
-            if (channel == 0 || channel == 5)
+            const unsigned value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
+            if (channel == 0 || channel == 6)
             {
-                key.setBrightness(value);
-                key.noteOn();
+                key.gate(true);
             }
-            else if (channel == 1 || channel == 6)
+            else if (channel == 1 || channel == 7)
             {
-                key.setHue(value * 360.);
+                key.setRed(value);
             }
-            else if (channel == 2 || channel == 7)
+            else if (channel == 2 || channel == 8)
             {
-                key.setSaturation(value);
+                key.setGreen(value);
             }
-            else if (channel == 3 || channel == 8)
+            else if (channel == 3 || channel == 9)
             {
-                key.setAttack(value * 50.);
+                key.setBlue(value);
             }
-            else if (channel == 4 || channel == 9)
+            else if (channel == 4 || channel == 10)
+            {
+                key.setAttack(value * 127.);
+            }
+            else if (channel == 5 || channel == 11)
             {
                 key.setRelease(value * 127.);
             }
         }
-        else if (midiMessage.isNoteOff() && (channel == 0 || channel == 5))
+        else if (midiMessage.isNoteOff() && (channel == 0 || channel == 6))
         {
-            key.noteOff();
+            key.gate(false);
         }
     }
 }

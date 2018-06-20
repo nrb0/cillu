@@ -19,6 +19,8 @@ SET(
     IlluminatorHelpers.h
     utils/Color.cpp
     utils/Color.h
+    utils/ColorHelpers.cpp
+    utils/ColorHelpers.h
 )
 
 set(CMAKE_CXX_STANDARD 17)

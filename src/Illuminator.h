@@ -2,6 +2,8 @@
 
 #include "KeyColorModule.h"
 
+#include <utils/Color.h>
+
 #include <array>
 #include <memory>
 #include <string>
@@ -18,30 +20,12 @@ namespace cillu
 class Illuminator
 {
 public:
-
-    struct HSV
-    {
-        float h;
-        float s;
-        float v;
-    };
-
-    struct RGB
-    {
-        float r;
-        float g;
-        float b;
-    };
-
-    using HSVs = std::array<HSV, 128>;
     using KeyColorModules = std::array<KeyColorModule, 128>;
 
     Illuminator();
-    ~Illuminator();
-
-    Illuminator::RGB getKeyColor(size_t index, bool isForeground);
 
     void update();
+    Color getKeyColor(const size_t index, const bool isForeground = true);
 
 private:
     static void onMidiMessage(double timeStamp, std::vector<unsigned char>* message, void* userData);

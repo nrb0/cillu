@@ -11,79 +11,67 @@ namespace cillu
 
 //----------------------------------------------------------------------------------------------------------------------
 
-KeyColorModule::KeyColorModule()
-: m_eg(std::make_unique<EnvelopeGenerator>())
+void KeyColorModule::update()
 {
+    m_color.setAlpha(m_eg.processValue());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-KeyColorModule::~KeyColorModule() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void KeyColorModule::noteOn()
+void KeyColorModule::gate(const bool enabled)
 {
-    m_noteOn = std::min(m_noteOn +1, 2);
-
-    m_eg->gate(m_noteOn != 0);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void KeyColorModule::noteOff()
-{
-    m_noteOn = std::max(m_noteOn - 1, 0);
-    m_eg->gate(m_noteOn != 0);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void KeyColorModule::setHue(const float hue)
-{
-    m_hue = hue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void KeyColorModule::setSaturation(const float saturation)
-{
-    m_saturation = saturation;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void KeyColorModule::setBrightness(const float brightness)
-{
-    m_brightnessCoef = brightness;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void KeyColorModule::onTimer()
-{
-    m_brightness = m_eg->processValue() * m_brightnessCoef;
+    if (enabled)
+    {
+        m_gate = std::min(m_gate + 1, 2);
+        m_eg.gate(m_gate != 0);
+    }
+    else
+    {
+        m_gate = std::max(m_gate - 1, 0);
+        m_eg.gate(m_gate != 0);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void KeyColorModule::setAttack(const float value)
 {
-    m_eg->setAttackRate(value);
+    m_eg.setAttackRate(value * 200);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void KeyColorModule::setDecay(const float value)
 {
-    m_eg->setDecayRate(value);
+    m_eg.setDecayRate(value * 200);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void KeyColorModule::setRelease(const float value)
 {
-    m_eg->setReleaseRate(value);
+    m_eg.setReleaseRate(value * 200);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyColorModule::setRed(const float red)
+{
+    m_color.setRed(red);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyColorModule::setGreen(const float green)
+{
+    m_color.setGreen(green);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyColorModule::setBlue(const float blue)
+{
+    m_color.setBlue(blue);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #include "Color.h"
 
-#include <IlluminatorHelpers.h>
+#include <utils/ColorHelpers.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -14,99 +14,63 @@ Color::Color()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Color::Color(unsigned red, unsigned green, unsigned blue)
+Color::Color(float red, float green, float blue)
 {
     setRGB(red, green, blue);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Color::Color(float hue, float saturation, float value)
+Color::Color(float red, float green, float blue, float alpha)
 {
-    setHSV(hue, saturation, value);
+    setRGBA(red, green, blue, alpha);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Color::setRGB(unsigned red, unsigned green, unsigned blue)
+void Color::setRGB(float red, float green, float blue)
+{
+    setRed(red);
+    setGreen(green);
+    setBlue(blue);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Color::setRGBA(float red, float green, float blue, float alpha)
+{
+    setRed(red);
+    setGreen(green);
+    setBlue(blue);
+    setAlpha(alpha);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Color::setRed(float red)
 {
     m_red = red;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Color::setGreen(float green)
+{
     m_green = green;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void Color::setBlue(float blue)
+{
     m_blue = blue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Color::setHSV(float hue, float saturation, float value)
+void Color::setAlpha(float alpha)
 {
-    float r,g,b;
-    IlluminatorHelpers::HSVtoRGB(hue, saturation, value, r, g, b);
-    m_red = r * 256;
-    m_green = g * 256;
-    m_blue = b * 256;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void Color::setHue(float hue)
-{
-    float prevHue, saturation, value, r, g, b;
-    IlluminatorHelpers::RGBtoHSV(m_red, m_green, m_blue, prevHue, saturation, value);
-    IlluminatorHelpers::HSVtoRGB(hue, saturation, value, r, g, b);
-    m_red = r * 256;
-    m_green = g * 256;
-    m_blue = b * 256;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void Color::setSaturation(float saturation)
-{
-    float hue, prevSaturation, value, r, g, b;
-    IlluminatorHelpers::RGBtoHSV(m_red, m_green, m_blue, hue, prevSaturation, value);
-    IlluminatorHelpers::HSVtoRGB(hue, saturation, value, r, g, b);
-    m_red = r * 256;
-    m_green = g * 256;
-    m_blue = b * 256;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void Color::setBrightness(float value)
-{
-    float hue, saturation, prevValue, r, g, b;
-    IlluminatorHelpers::RGBtoHSV(m_red, m_green, m_blue, hue, saturation, prevValue);
-    IlluminatorHelpers::HSVtoRGB(hue, saturation, value, r, g, b);
-    m_red = r * 256;
-    m_green = g * 256;
-    m_blue = b * 256;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-float Color::hue() const
-{
-    float hue, saturation, value;
-    IlluminatorHelpers::RGBtoHSV(m_red, m_green, m_blue, hue, saturation, value);
-    return hue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-float Color::saturation() const
-{
-    float hue, saturation, value;
-    IlluminatorHelpers::RGBtoHSV(m_red, m_green, m_blue, hue, saturation, value);
-    return saturation;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-float Color::value() const
-{
-    float hue, saturation, value;
-    IlluminatorHelpers::RGBtoHSV(m_red, m_green, m_blue, hue, saturation, value);
-    return value;
+    m_alpha = alpha;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

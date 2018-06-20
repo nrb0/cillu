@@ -25,8 +25,8 @@ float calcCoef(const float rate, const float targetRatio)
 
 EnvelopeGenerator::EnvelopeGenerator()
 {
-    setAttackTargetRatio(0.3);
-    setDecayReleaseTargetRatio(0.0001);
+    setAttackTargetRatio(0.001);
+    setDecayReleaseTargetRatio(0.001);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
