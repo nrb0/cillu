@@ -12,8 +12,12 @@ namespace ColorHelpers
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void RGBtoHSV(const float red, const float green, const float blue, float& hue, float& saturation, float& value)
+void computeHSV(const Color color, float& hue, float& saturation, float& value)
 {
+    const float red = color.red();
+    const float green = color.green();
+    const float blue = color.blue();
+
     float fCMax = std::max(std::max(red, green), blue);
     float fCMin = std::min(std::min(red, green), blue);
     float fDelta = fCMax - fCMin;
@@ -55,63 +59,68 @@ void RGBtoHSV(const float red, const float green, const float blue, float& hue, 
     {
         hue = 360 + hue;
     }
+
+    hue = hue / 360.;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void fromHSV(const float hue, const float saturation, const float value, float& red, float& green, float& blue)
+Color fromHSV(const float hue, const float saturation, const float value)
 {
+    Color result;
     float fC = value * saturation; // Chroma
-    float fHPrime = fmod(hue / 60.0, 6);
+    float fHPrime = fmod((hue * 360.) / 60.0, 6);
     float fX = fC * (1 - fabs(fmod(fHPrime, 2) - 1));
     float fM = value - fC;
 
     if(0 <= fHPrime && fHPrime < 1)
     {
-        red = fC;
-        green = fX;
-        blue = 0;
+        result.setRed(fC);
+        result.setGreen(fX);
+        result.setBlue(0);
     }
     else if(1 <= fHPrime && fHPrime < 2)
     {
-        red = fX;
-        green = fC;
-        blue = 0;
+        result.setRed(fX);
+        result.setGreen(fC);
+        result.setBlue(0);
     }
     else if(2 <= fHPrime && fHPrime < 3)
     {
-        red = 0;
-        green = fC;
-        blue = fX;
+        result.setRed(0);
+        result.setGreen(fC);
+        result.setBlue(fX);
     }
     else if(3 <= fHPrime && fHPrime < 4)
     {
-        red = 0;
-        green = fX;
-        blue = fC;
+        result.setRed(0);
+        result.setGreen(fX);
+        result.setBlue(fC);
     }
     else if(4 <= fHPrime && fHPrime < 5)
     {
-        red = fX;
-        green = 0;
-        blue = fC;
+        result.setRed(fX);
+        result.setGreen(0);
+        result.setBlue(fC);
     }
     else if(5 <= fHPrime && fHPrime < 6)
     {
-        red = fC;
-        green = 0;
-        blue = fX;
+        result.setRed(fC);
+        result.setGreen(0);
+        result.setBlue(fX);
     }
     else
     {
-        red = 0;
-        green = 0;
-        blue = 0;
+        result.setRed(0);
+        result.setGreen(0);
+        result.setBlue(0);
     }
 
-    red += fM;
-    green += fM;
-    blue += fM;
+    result.setRed(result.red() + fM);
+    result.setGreen(result.green() + fM);
+    result.setBlue(result.blue() + fM);
+
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

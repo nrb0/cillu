@@ -3,6 +3,8 @@
 #include "IlluminatorHelpers.h"
 #include "MidiMessage.h"
 
+#include <utils/ColorHelpers.h>
+
 #include <cabl/util/Log.h>
 
 #include <boost/range/irange.hpp>
@@ -74,40 +76,87 @@ void KeyboardLayer::onMidiMessage(double, std::vector<unsigned char>* message, v
         const int index = midiMessage.getKeyNumber();
         const int channel = midiMessage.getChannel();
 
-        KeyColorModule& key = self->m_modules[index];
-        if (midiMessage.isNoteOn() && index >= 0 && index < 128)
+        if (midiMessage.isNoteOn())
         {
             const unsigned value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
-            if (channel == 0)
+            switch(channel)
             {
-                key.gate(true);
-            }
-            else if (channel == 1)
-            {
-                key.setRed(value);
-            }
-            else if (channel == 2)
-            {
-                key.setGreen(value);
-            }
-            else if (channel == 3)
-            {
-                key.setBlue(value);
-            }
-            else if (channel == 4)
-            {
-                key.setAttack(value * 127.);
-            }
-            else if (channel == 5)
-            {
-                key.setRelease(value * 127.);
+            case 0:
+                self->gateKey(index, true);
+                break;
+            case 1:
+                self->setKeyHue(index, value);
+                break;
+            case 2:
+                self->setKeySaturation(index, value);
+                break;
+            case 3:
+                self->setKeyBrightness(index, value);
+                break;
+            case 4:
+                self->setKeyFadeIn(index, value);
+                break;
+            case 5:
+                self->setKeyFadeOut(index, value);
+                break;
+            default:
+                break;
             }
         }
         else if (midiMessage.isNoteOff() && channel == 0)
         {
-            key.gate(false);
+            self->gateKey(index, false);
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyboardLayer::setKeyHue(const unsigned index, const float value)
+{
+    if (index >= m_modules.size()) return;
+    Color color = m_modules[index].getColor();
+
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyboardLayer::setKeySaturation(const unsigned index, const float value)
+{
+    if (index >= m_modules.size()) return;
+    const Color& color = m_modules[index].getColor();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyboardLayer::setKeyBrightness(const unsigned index, const float value)
+{
+    if (index >= m_modules.size()) return;
+    const Color& color = m_modules[index].getColor();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyboardLayer::setKeyFadeIn(const unsigned index, const float value)
+{
+    if (index >= m_modules.size()) return;
+    m_modules[index].setAttack(value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyboardLayer::setKeyFadeOut(const unsigned index, const float value)
+{
+    if (index >= m_modules.size()) return;
+    m_modules[index].setRelease(value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void KeyboardLayer::gateKey(const unsigned index, const bool enabled)
+{
+    if (index >= m_modules.size()) return;
+    m_modules[index].gate(enabled);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
