@@ -76,4 +76,11 @@ void KeyColorModule::setBlue(const float blue)
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void KeyColorModule::setColor(const Color& color)
+{
+    m_color.setRGB(color.red(), color.green(), color.blue());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace cillu

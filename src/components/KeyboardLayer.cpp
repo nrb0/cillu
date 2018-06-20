@@ -112,27 +112,47 @@ void KeyboardLayer::onMidiMessage(double, std::vector<unsigned char>* message, v
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void KeyboardLayer::setKeyHue(const unsigned index, const float value)
+void KeyboardLayer::setKeyHue(const unsigned index, const float newHue)
 {
     if (index >= m_modules.size()) return;
-    Color color = m_modules[index].getColor();
+    KeyColorModule& module = m_modules[index];
+    Color color = module .getColor();
 
+    float hue, saturation, value;
+
+    ColorHelpers::computeHSV(color, hue, saturation, value);
+    Color newColor = ColorHelpers::fromHSV(newHue, saturation, value);
+    module.setColor(newColor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void KeyboardLayer::setKeySaturation(const unsigned index, const float value)
+void KeyboardLayer::setKeySaturation(const unsigned index, const float newSaturation)
 {
     if (index >= m_modules.size()) return;
-    const Color& color = m_modules[index].getColor();
+    KeyColorModule& module = m_modules[index];
+    Color color = module .getColor();
+
+    float hue, saturation, value;
+
+    ColorHelpers::computeHSV(color, hue, saturation, value);
+    Color newColor = ColorHelpers::fromHSV(hue, newSaturation, value);
+    module.setColor(newColor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void KeyboardLayer::setKeyBrightness(const unsigned index, const float value)
+void KeyboardLayer::setKeyBrightness(const unsigned index, const float newValue)
 {
     if (index >= m_modules.size()) return;
-    const Color& color = m_modules[index].getColor();
+    KeyColorModule& module = m_modules[index];
+    Color color = module .getColor();
+
+    float hue, saturation, value;
+
+    ColorHelpers::computeHSV(color, hue, saturation, value);
+    Color newColor = ColorHelpers::fromHSV(hue, saturation, newValue);
+    module.setColor(newColor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -140,7 +160,8 @@ void KeyboardLayer::setKeyBrightness(const unsigned index, const float value)
 void KeyboardLayer::setKeyFadeIn(const unsigned index, const float value)
 {
     if (index >= m_modules.size()) return;
-    m_modules[index].setAttack(value);
+    KeyColorModule& module = m_modules[index];
+    module.setAttack(value);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -148,7 +169,8 @@ void KeyboardLayer::setKeyFadeIn(const unsigned index, const float value)
 void KeyboardLayer::setKeyFadeOut(const unsigned index, const float value)
 {
     if (index >= m_modules.size()) return;
-    m_modules[index].setRelease(value);
+    KeyColorModule& module = m_modules[index];
+    module.setRelease(value);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -156,7 +178,8 @@ void KeyboardLayer::setKeyFadeOut(const unsigned index, const float value)
 void KeyboardLayer::gateKey(const unsigned index, const bool enabled)
 {
     if (index >= m_modules.size()) return;
-    m_modules[index].gate(enabled);
+    KeyColorModule& module = m_modules[index];
+    module.gate(enabled);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

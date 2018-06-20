@@ -26,6 +26,7 @@ public:
     void setRed(float);
     void setGreen(float);
     void setBlue(float);
+    void setColor(const Color&);
 
     const Color& getColor() { return m_color; }
 
