@@ -1,13 +1,10 @@
 #pragma once
 
-#include "KeyColorModule.h"
+#include <components/KeyColorModule.h>
 
 #include <utils/Color.h>
 
 #include <array>
-#include <memory>
-#include <string>
-#include <unordered_map>
 #include <vector>
 
 class RtMidiIn;
@@ -17,23 +14,20 @@ namespace cillu
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Illuminator
+class KeyboardLayer
 {
 public:
-    using KeyColorModules = std::array<KeyColorModule, 128>;
-
-    Illuminator();
+    KeyboardLayer(const std::string& midiPortName);
 
     void update();
-    Color getKeyColor(const size_t index, const bool isForeground = true);
+
+    Color getColor(const unsigned index);
 
 private:
-    static void onMidiMessage(double timeStamp, std::vector<unsigned char>* message, void* userData);
+    static void onMidiMessage(double timestamp, std::vector<unsigned char>* message, void* userData);
 
     std::unique_ptr<RtMidiIn> m_midiIn;
-
-    KeyColorModules m_background;
-    KeyColorModules m_foreground;
+    std::array<KeyColorModule, 128> m_modules;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

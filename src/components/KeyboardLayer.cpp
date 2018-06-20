@@ -1,4 +1,5 @@
-#include "Illuminator.h"
+#include "KeyboardLayer.h"
+
 #include "IlluminatorHelpers.h"
 #include "MidiMessage.h"
 
@@ -10,6 +11,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <functional>
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -18,28 +20,28 @@ namespace cillu
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Illuminator::Illuminator()
+KeyboardLayer::KeyboardLayer(const std::string& midiPortName)
 : m_midiIn(std::make_unique<RtMidiIn>())
 {
     try
     {
-        m_midiIn->openVirtualPort("cillu");
-        m_midiIn->setCallback(&Illuminator::onMidiMessage, this);
+        m_midiIn->openVirtualPort(midiPortName);
+        m_midiIn->setCallback(&KeyboardLayer::onMidiMessage, this);
     }
     catch (RtMidiError& error)
     {
-        std::string strError = "[Illuminator] RtMidiError: " + error.getMessage();
+        std::string strError = "[KeyboardLayer] Error trying to open " + midiPortName + ": " + error.getMessage();
         M_LOG(strError);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Color Illuminator::getKeyColor(const size_t index, const bool isForeground)
+Color KeyboardLayer::getColor(const unsigned index)
 {
-    if (index < 128)
+    if (index < m_modules.size())
     {
-        KeyColorModule& key = isForeground ? m_foreground[index] : m_background[index];
+        KeyColorModule& key = m_modules[index];
         return key.getColor();
     }
 
@@ -48,14 +50,9 @@ Color Illuminator::getKeyColor(const size_t index, const bool isForeground)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Illuminator::update()
+void KeyboardLayer::update()
 {
-    std::for_each(m_background.begin(), m_background.end(), [](KeyColorModule& key)
-    {
-        key.update();
-    });
-
-    std::for_each(m_foreground.begin(), m_foreground.end(), [](KeyColorModule& key)
+    std::for_each(m_modules.begin(), m_modules.end(), [](KeyColorModule& key)
     {
         key.update();
     });
@@ -63,9 +60,9 @@ void Illuminator::update()
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void Illuminator::onMidiMessage(double, std::vector<unsigned char>* message, void* userData)
+void KeyboardLayer::onMidiMessage(double, std::vector<unsigned char>* message, void* userData)
 {
-    Illuminator* self = static_cast<Illuminator*>(userData);
+    KeyboardLayer* self = static_cast<KeyboardLayer*>(userData);
     if (!self || !message)
     {
         return;
@@ -82,36 +79,36 @@ void Illuminator::onMidiMessage(double, std::vector<unsigned char>* message, voi
             return;
         }
 
-        KeyColorModule& key = channel < 6 ? self->m_foreground[index] : self->m_background[index];
+        KeyColorModule& key = self->m_modules[index];
         if (midiMessage.isNoteOn() && index >= 0 && index < 128)
         {
             const unsigned value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
-            if (channel == 0 || channel == 6)
+            if (channel == 0)
             {
                 key.gate(true);
             }
-            else if (channel == 1 || channel == 7)
+            else if (channel == 1)
             {
                 key.setRed(value);
             }
-            else if (channel == 2 || channel == 8)
+            else if (channel == 2)
             {
                 key.setGreen(value);
             }
-            else if (channel == 3 || channel == 9)
+            else if (channel == 3)
             {
                 key.setBlue(value);
             }
-            else if (channel == 4 || channel == 10)
+            else if (channel == 4)
             {
                 key.setAttack(value * 127.);
             }
-            else if (channel == 5 || channel == 11)
+            else if (channel == 5)
             {
                 key.setRelease(value * 127.);
             }
         }
-        else if (midiMessage.isNoteOff() && (channel == 0 || channel == 6))
+        else if (midiMessage.isNoteOff() && channel == 0)
         {
             key.gate(false);
         }

@@ -1,4 +1,7 @@
-#include "IlluminatorHelpers.h"
+#include "ColorHelpers.h"
+
+#include <algorithm>
+#include <cmath>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,5 @@
 #include "KontrolS49.h"
 
-#include "Illuminator.h"
 #include "MidiMessage.h"
 
 #include <utils/ColorHelpers.h>
@@ -10,16 +9,8 @@
 #include <RtMidi.h>
 
 #include <algorithm>
-#include <cmath>
+#include <functional>
 #include <string>
-
-//--------------------------------------------------------------------------------------------------
-
-namespace
-{
-    constexpr unsigned MIDI_MIN = 0;
-    constexpr unsigned MIDI_MAX = 127;
-}
 
 //--------------------------------------------------------------------------------------------------
 
@@ -30,18 +21,9 @@ namespace cillu
 
 KontrolS49::KontrolS49()
 : sl::cabl::Client({"KOMPLETE KONTROL S49", 0x17CC, 0x1350, sl::cabl::DeviceDescriptor::Type::HID })
-, m_midiOut(std::make_unique<RtMidiOut>())
-, m_illuminator(std::make_unique<Illuminator>())
+, m_background("cilluBack")
+, m_foreground("cilluFront")
 {
-    try
-    {
-        m_midiOut->openVirtualPort("cillu");
-    }
-    catch (RtMidiError& error)
-    {
-        std::string strError = "[KontrolS49] RtMidiError: " + error.getMessage();
-        M_LOG(strError);
-    }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -52,7 +34,8 @@ KontrolS49::~KontrolS49() = default;
 
 void KontrolS49::onTimer()
 {
-    m_illuminator->update();
+    m_background.update();
+    m_foreground.update();
 
     if (!device())
     {
@@ -62,8 +45,9 @@ void KontrolS49::onTimer()
     const size_t currentOctave = device()->currentOctave();
     for (const size_t index : boost::irange(0, 49))
     {
-        Color foreground = m_illuminator->getKeyColor(currentOctave + index, true);
-        Color background = m_illuminator->getKeyColor(currentOctave + index, false);
+        Color foreground = m_foreground.getColor(currentOctave + index);
+//        Color background = m_background.getColor(currentOctave + index);
+        Color background = Color(1.0, 0, 0);
         Color blend = ColorHelpers::blend(ColorHelpers::blend(foreground, background), Color());
 
 
@@ -96,32 +80,13 @@ void KontrolS49::disconnected()
 
 //--------------------------------------------------------------------------------------------------
 
-void KontrolS49::sendControlChange(const unsigned channel, const unsigned id, const unsigned value)
-{
-    MidiMessage message;
-    message.makeController(channel, id, value);
-    sendMIDIMessage(message);
-}
-
-//--------------------------------------------------------------------------------------------------
-
-void KontrolS49::sendMIDIMessage(MidiMessage& message)
-{
-    if (!m_midiOut)
-        return;
-
-    m_midiOut->sendMessage(&message);
-}
-
-//--------------------------------------------------------------------------------------------------
-
 void KontrolS49::render()
 {
 }
 
 //--------------------------------------------------------------------------------------------------
 
-void KontrolS49::keyChanged(unsigned index_, double value_, bool shiftPressed_)
+void KontrolS49::keyChanged(unsigned index_, double value_, bool)
 {
     std::string log = "Key#" + std::to_string(static_cast<int>(index_)) + " " + std::to_string(static_cast<int>(value_ * 100));
     M_LOG(log);

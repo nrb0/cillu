@@ -1,5 +1,7 @@
 #pragma once
 
+#include <components/KeyboardLayer.h>
+
 #include <cabl/cabl.h>
 
 #include <memory>
@@ -7,11 +9,9 @@
 #include <vector>
 
 class MidiMessage;
-class RtMidiOut;
 
 namespace cillu
 {
-class Illuminator;
 
 class KontrolS49 : public sl::cabl::Client
 {
@@ -29,12 +29,8 @@ public:
     void keyChanged(unsigned index_, double value_, bool shiftPressed) override;
 
 private:
-
-    void sendControlChange(unsigned channel, unsigned id, unsigned value);
-    void sendMIDIMessage(MidiMessage& message);
-
-    std::unique_ptr<Illuminator> m_illuminator;
-    std::unique_ptr<RtMidiOut> m_midiOut;
+    KeyboardLayer m_background;
+    KeyboardLayer m_foreground;
 };
 
 } // namespace cillu

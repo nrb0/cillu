@@ -1,5 +1,4 @@
 #include "KontrolS49.h"
-#include "Illuminator.h"
 
 #include <net/OSCReceiver.h>
 

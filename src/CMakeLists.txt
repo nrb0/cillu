@@ -3,18 +3,18 @@ find_package(Boost REQUIRED)
 SET(
   cillu_FILES
     main.cpp
+    components/EnvelopeGenerator.cpp
+    components/EnvelopeGenerator.h
+    components/KeyboardLayer.cpp
+    components/KeyboardLayer.h
+    components/KeyColorModule.cpp
+    components/KeyColorModule.h
     KontrolS49.cpp
     KontrolS49.h
     net/OSCReceiver.cpp
     net/OSCReceiver.h
     MidiMessage.cpp
     MidiMessage.h
-    EnvelopeGenerator.cpp
-    EnvelopeGenerator.h
-    Illuminator.cpp
-    Illuminator.h
-    KeyColorModule.cpp
-    KeyColorModule.h
     IlluminatorHelpers.cpp
     IlluminatorHelpers.h
     utils/Color.cpp

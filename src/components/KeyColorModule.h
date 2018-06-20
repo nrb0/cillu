@@ -1,12 +1,15 @@
 #pragma once
 
-#include "utils/Color.h"
-#include "EnvelopeGenerator.h"
+#include <components/EnvelopeGenerator.h>
+
+#include <utils/Color.h>
 
 #include <memory>
 
 namespace cillu
 {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class KeyColorModule
 {
@@ -31,7 +34,8 @@ private:
 
     Color m_color;
     EnvelopeGenerator m_eg;
-
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace cillu
