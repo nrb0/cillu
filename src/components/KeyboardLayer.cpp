@@ -78,7 +78,7 @@ void KeyboardLayer::onMidiMessage(double, std::vector<unsigned char>* message, v
 
         if (midiMessage.isNoteOn())
         {
-            const unsigned value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
+            const float value = std::clamp<float>(midiMessage.getVelocity() / 127., 0, 1);
             switch(channel)
             {
             case 0:
